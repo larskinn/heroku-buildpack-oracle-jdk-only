@@ -104,26 +104,6 @@ install_java() {
   export PATH="${build_dir}/.jdk/bin:${PATH}"
 }
 
-install_jce() {
-  java_ver=$(java_version)
-  
-  if [ ! -n "${JAVA_HOME}" ]; then error "JAVA_HOME not set, unable to install JCE."; fi
-  if [ ! -d "${JAVA_HOME}" ]; then error "JAVA_HOME directory does not exist, unable to install JCE."; fi
-  
-  if [ "${java_ver:0:3}" == "1.8" ]; then
-    jce_url="http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip"
-    jce_dir="UnlimitedJCEPolicyJDK8"
-  else
-    error "Unable to resolve Java version for JCE"
-  fi
-  
-  cd $(mktmpdir jce)
-  wget --quiet --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -O jce_policy.zip "${jce_url}"
-  jar xf jce_policy.zip
-  cd $jce_dir
-  cp -f *.jar "${JAVA_HOME}/jre/lib/security/"
-}
-
 maven_version() {
   base=$1
   echo $(${base}mvn --version 2>&1 | head -n 1 | cut -d ' ' -f 3)
@@ -150,34 +130,6 @@ install_maven() {
   export M2_HOME="${cache_dir}/.maven"
   export M2="${M2_HOME}/bin"
   export PATH="${M2}:${PATH}"
-}
-
-install_newrelic() {
-  build_dir=$1
-  newrelic_url=${2:-"http://search.maven.org/remotecontent?filepath=com/newrelic/agent/java/newrelic-agent/3.7.2/newrelic-agent-3.7.2.jar"}
-  
-  if [ ! -d "${build_dir}" ]; then error "Invalid slug directory to install NewRelic agent."; fi
-  
-  mkdir -p "${build_dir}/.newrelic"
-  wget --quiet -O "${build_dir}/.newrelic/newrelic-agent.jar" "${newrelic_url}"
-  
-  if [ ! -f "${build_dir}/.newrelic/newrelic-agent.jar" ]; then
-    error "Unable to retrieve NewRelic agent."
-  fi
-}
-
-install_gems() {
-  cache_dir=$1
-  gems=$2
-  
-  if [ ! -d "${cache_dir}" ]; then error "Invalid cache directory to store Ruby gems."; fi
-
-  rm -rf "${cache_dir}/.gems" && mkdir -p "${cache_dir}/.gems"
-
-  gem install --no-rdoc --no-ri -i "${cache_dir}/.gems" ${gems} 2>&1 | indent
-  
-  export PATH="${cache_dir}/.gems/bin:${PATH}"
-  export GEM_PATH="${cache_dir}/.gems:${GEM_PATH}"
 }
 
 create_profile() {
