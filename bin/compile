@@ -27,27 +27,9 @@ statusn "Installing JDK..."
 install_java $CACHE_DIR $BUILD_DIR
 echo " version $(java_version) installed"
 
-if [ "true" == $JCE ]; then
-  statusn "Installing JCE Unlimited Strength..."
-  install_jce
-  echo " done"
-fi
-
 statusn "Installing Maven..."
 install_maven $CACHE_DIR
 echo " version $(maven_version) installed"
-
-# NewRelic does not support Java8 until 3.8.x
-#if [ -n $NEW_RELIC_LICENSE_KEY ]; then
-#  statusn "Installing NewRelic agent..."
-#  install_newrelic $BUILD_DIR
-#  echo " done"
-#fi
-
-if [ -n $GEMS ]; then
-  status "Installing Gems..."
-  install_gems $CACHE_DIR $GEMS
-fi
 
 cd $BUILD_DIR
 
