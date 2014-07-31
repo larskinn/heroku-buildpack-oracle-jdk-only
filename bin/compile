@@ -29,4 +29,6 @@ echo " version $(java_version) installed"
 
 cd $BUILD_DIR
 
-rm -rf "$CACHE_DIR/.gems"
+create_profile $BUILD_DIR
+
+rm -rf "$CACHE_DIR/.m2" "$CACHE_DIR/.gems"
